@@ -58,6 +58,7 @@ var namingSchemaReference = {
         'ENVIRONMENT'
       ]
     }
+  }
 }
 ```
 
@@ -104,6 +105,46 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-04-01' = {
     // Define properties for the Virtual Network.
   }
 }
+
+```
+
+### NOTES:
+
+The Keywords used in the pattern a customizable, meaning for each keyword a corresponding paramter in the **parameters**-Object given on the function call is searched. 
+
+If it is required and not provided an error such as the following is forced by the function, preventing incorrect naming to be deployed.
+
+![example.error.missingParameter](./_resources/example.error.mssingParameter.png)
+
+<span style="color:orange">**This doesn't apply for special Parameters which currently are UNIQUE_STRING and POSTFIX_INDEX**</span>
+
+<span style="color:orange">**Keywords used in the pattern array need always be written in `< >`**</span>
+
+```Bicep
+resources: {
+  'Microsoft.KeyVault/vaults': {
+    enforceAllLowerCase: true
+    delimiter: '-'
+
+    pattern: ['kv', '<PREFIX>', '<NAME>', '<CUSTOM>','<ENVIRONMENT>', '<UNIQUE_STRING>']
+    required: [
+      'NAME'
+      'ENVIRONMENT'
+      'CUSTOM' 
+    ]
+  }
+}
+
+// Upon Function-Call this now expects a custom parameter in lowercase.
+var kvName = nameGenerator(
+    'Microsoft.Network/virtualNetworks',
+    namingSchemaReference,
+    {
+      name: 'secrets'
+      environment: 'dev'
+      custom: 'bla'
+    }
+  )
 
 ```
 
