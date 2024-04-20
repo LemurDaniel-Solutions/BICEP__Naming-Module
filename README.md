@@ -51,7 +51,7 @@ The **namingSchemaReference** consists of two parts:
 - Defining the short names for each Azure location used
 - Defining the naming patterns for each Azure resource used
 
-This can be customized and extended to the desired Naming-Preferences. One or multiple **SchemaReferences** can be created for different Naming-Conventions. The schema is passed to the **nameGenerator()-Function**, using the information to generate an appropriate name.
+This can be customized and extended to the desired Naming-Preferences. One or multiple **SchemaReferences** can be created for different Naming-Conventions. The schema is passed to the **nameGenerator()-Function**, using the information to generate an appropriate name. Each resource definition defines the naming via a pattern, delimiter and required parameters. A special formatting can be applied to certain parameters. A PostfixIndex can be formated this way to be always padded with three zeroes, turning '1' into '001'.
 
 ```Bicep
 // NOTE: Needs to be exported, so it can be imported by other modules
@@ -63,15 +63,24 @@ var namingSchemaReference = {
   }
 
   resources: {
-    'Microsoft.KeyVault/vaults': {
+    'Microsoft.Network/virtualNetworks': {
       enforceAllLowerCase: true
 
       delimiter: '-'
-      pattern: ['kv', '<PREFIX>', '<NAME>', '<ENVIRONMENT>', '<UNIQUE_STRING>']
+      pattern: ['vnet', '<PREFIX>', '<NAME>', '<LOCATION>', '<ENVIRONMENT>', '<POSTFIX_INDEX>']
       required: [
         'NAME'
+        'LOCATION'
         'ENVIRONMENT'
+        'POSTFIX_INDEX'
       ]
+      formats: {
+        // Formats a postfixIndex number into a string with three padded zeroes:
+        // '1'  => '001'
+        // '2'  => '002'
+        // '12' => '012'
+        POSTFIX_INDEX: '{0:000}'
+      }
     }
   }
 }
@@ -145,6 +154,9 @@ resources: {
       'ENVIRONMENT'
       'CUSTOM_PARAMETER' 
     ]
+    formats: {
+      CUSTOM_PARAMETER: '{0:000}'
+    }
   }
 }
 

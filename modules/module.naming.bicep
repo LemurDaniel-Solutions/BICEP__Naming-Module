@@ -102,21 +102,6 @@ var namingSchemaReference = {
   }
 
   resources: {
-    'Microsoft.Web/sites/functionApp': {
-      enforceAllLowerCase: true
-
-      delimiter: '-'
-      pattern: ['func', '<PREFIX>', '<NAME>', '<LOCATION>', '<ENVIRONMENT>', '<POSTFIX_INDEX>']
-      required: [
-        'NAME'
-        'LOCATION'
-        'ENVIRONMENT'
-        'POSTFIX_INDEX'
-      ]
-      formats: {
-        POSTFIX_INDEX: '{0:000}'
-      }
-    }
 
     'Microsoft.KeyVault/vaults': {
       enforceAllLowerCase: true

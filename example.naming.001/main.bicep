@@ -33,7 +33,7 @@ output storageAccountNamingExample string = nameGenerator(
   }
 )
 output functionAppNamingExample string = nameGenerator(
-  'Microsoft.Web/sites/functionApp',
+  'Microsoft.Web/sites/functions',
   namingSchemaReference,
   {
     name: 'apps'
