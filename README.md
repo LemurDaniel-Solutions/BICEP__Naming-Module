@@ -1,9 +1,6 @@
-
-
 ## **Bicep Naming-Module POC** - An approach to handle consistent naming in Bicep-Modules
 
-
-#### I haven't foud anything else good for naming in Bicep yet and Microsoft just always seems to use vars and implement naming in every module. So sharing this one here for a centralised solution. Hope it helps anyone else 🚀😊
+#### I haven't found anything else good for naming in Bicep yet, and Microsoft just always seems to use vars and implement naming in every module. So, sharing this one here for a centralized solution. Hope it helps anyone else! 🚀😊
 
 <br>
 
@@ -13,28 +10,25 @@ This approach for a Naming-Module uses:
 
 <br>
 
-> <span style="color:orange">**Since `User Defined Functions` were release with Bicep 0.26.x, this approach requires Bicep 0.26.x or higher**</span>
+> <span style="color:orange">**Since `User Defined Functions` were released with Bicep 0.26.x, this approach requires Bicep 0.26.x or higher**</span>
 
-> <span style="color:orange">**In some previous version it can be activated as an experimental feature**</span>
-
+> <span style="color:orange">**In some previous versions, it can be activated as an experimental feature**</span>
 
 <br>
 
 ## How To Use
 
-
 ### Defining the Naming-Module
 
 The Naming-Module consists of two resources, which can be imported by other modules:
 - `nameGenerator()`: A user defined function for generating the desired name
-- `namingSchemaReference`: A reference for defining names for each resources, which is provided to the **nameGenerator()** upon calling it
-
+- `namingSchemaReference`: A reference for defining names for each resource, which is provided to the **nameGenerator()** upon calling it
 
 The **namingSchemaReference** consists of two parts:
-- Defining the shortnames for each azure location used
-- Defining the naming patterns for each azure resource used
+- Defining the short names for each Azure location used
+- Defining the naming patterns for each Azure resource used
 
-This can be customized and extended to the desired Naming-Preferences
+This can be customized and extended to the desired Naming-Preferences.
 
 One or multiple **SchemaReferences** can be created for different Naming-Conventions. The schema is passed to the **nameGenerator()-Function**, using the information to generate an appropriate name.
 
@@ -66,13 +60,11 @@ var namingSchemaReference = {
 
 To use the Naming-Module, the exported **schemaReference** and **nameGenerator()**-Function need to be imported. The imported **nameGenerator()**-Function can then be simply called to create the desired name.
 
-
 > <span style="color:orange">**Optimally it is imported from some central place, such as a Bicep-Module-Registry, so the naming is maintained and used from one central source**</span>
 
-> <span style="color:orange">**The Module also forces an error failing the Function-Call, when a parameter defined as required in the **namingSchemaReference** is not provided!**</span>
+> <span style="color:orange">**The Module also forces an error failing the Function-Call when a parameter defined as required in the **namingSchemaReference** is not provided!**</span>
 
 ```Bicep
-
 // This can also be imported from a Bicep-Module-Registry
 // import { namingSchemaReference, nameGenerator } from 'br:bicepnamingpoc001.azurecr.io/bicep/module.naming:1.0.0'
 
@@ -110,7 +102,7 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-04-01' = {
 
 ### NOTES:
 
-The Keywords used in the pattern a customizable. For each keyword a corresponding parameter is searched in the **parameters**-Object given on the function call. For Parameters like <CUSTOM_KEYWORD>, a camelcase parameter customKeyword is expected.
+The Keywords used in the pattern are customizable. For each keyword, a corresponding parameter is searched in the **parameters**-Object given on the function call. For Parameters like <CUSTOM_KEYWORD>, a camelcase parameter customKeyword is expected.
 
 If it is required and not provided, an error such as the following is forced by the function, preventing incorrect naming to be deployed.
 
@@ -126,23 +118,23 @@ resources: {
     enforceAllLowerCase: true
     delimiter: '-'
 
-    pattern: ['kv', '<PREFIX>', '<NAME>', '<CUSTOM>','<ENVIRONMENT>', '<UNIQUE_STRING>']
+    pattern: ['kv', '<PREFIX>', '<NAME>', '<CUSTOM_PARAMETER>','<ENVIRONMENT>', '<UNIQUE_STRING>']
     required: [
       'NAME'
       'ENVIRONMENT'
-      'CUSTOM' 
+      'CUSTOM_PARAMETER' 
     ]
   }
 }
 
-// Upon Function-Call this now expects a custom parameter in lowercase.
+// Upon Function-Call this now expects a custom parameter in camelcase.
 var kvName = nameGenerator(
     'Microsoft.Network/virtualNetworks',
     namingSchemaReference,
     {
       name: 'secrets'
       environment: 'dev'
-      custom: 'bla'
+      customParameter: 'bla'
     }
   )
 
@@ -155,9 +147,9 @@ var kvName = nameGenerator(
 
 ### Naming maintained at one place
 
-This approach ensures that one or multple Naming-Conventions are maintained in one central Naming-Module, that can be used and implemented by any other modules.
+This approach ensures that one or multiple Naming-Conventions are maintained in one central Naming-Module, that can be used and implemented by any other modules.
 
-### Consistent naming accross modules
+### Consistent naming across modules
 
 Since Naming is implemented in one central Naming-Module and not different modules, consistent naming is ensured by every module implementing it.
 
