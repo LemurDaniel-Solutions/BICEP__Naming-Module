@@ -2,12 +2,35 @@
 
 #### I haven't found anything else good for naming in Bicep yet, and Microsoft just always seems to use vars and implement naming in every module. So, sharing this one here for a centralized solution. Hope it helps anyone else! 🚀😊
 
-<br>
-
 This approach for a Naming-Module uses:
 - [User Defined Functions](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/user-defined-functions)
 - [Import and Export](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-import)
 
+<br>
+
+```Bicep
+import { namingSchemaReference, nameGenerator } from 'br:bicepnamingpoc001.azurecr.io/bicep/module.naming:1.0.0'
+
+resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-04-01' = {
+
+  // Will now generate a name such as: vnet-demo-euwe-dev-001
+  name: nameGenerator(
+    'Microsoft.Network/virtualNetworks',
+    namingSchemaReference,
+    {
+      name: vnetConfig.name
+      location: location
+      environment: environment
+      postfixIndex: 1
+    }
+  )
+  location: location
+
+  properties: {
+    // Define properties for the Virtual Network.
+  }
+}
+```
 <br>
 
 > <span style="color:orange">**Since `User Defined Functions` were released with Bicep 0.26.x, this approach requires Bicep 0.26.x or higher**</span>
@@ -28,9 +51,7 @@ The **namingSchemaReference** consists of two parts:
 - Defining the short names for each Azure location used
 - Defining the naming patterns for each Azure resource used
 
-This can be customized and extended to the desired Naming-Preferences.
-
-One or multiple **SchemaReferences** can be created for different Naming-Conventions. The schema is passed to the **nameGenerator()-Function**, using the information to generate an appropriate name.
+This can be customized and extended to the desired Naming-Preferences. One or multiple **SchemaReferences** can be created for different Naming-Conventions. The schema is passed to the **nameGenerator()-Function**, using the information to generate an appropriate name.
 
 ```Bicep
 // NOTE: Needs to be exported, so it can be imported by other modules
