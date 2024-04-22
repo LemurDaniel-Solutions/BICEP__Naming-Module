@@ -26,9 +26,9 @@ Publish-AzBicepModule `
 # Deploy bicep file for naming examples
 
 $Deployment = @{
-      Name                  = "pwsh.example.naming.001"
-      TemplateFile          = "./example.naming.001/main.bicep"
-      ResourceGroupName     = $resourceGroup
+      Name              = "pwsh.example.naming.001"
+      TemplateFile      = "./example.naming.001/main.bicep"
+      ResourceGroupName = $resourceGroup
 }
       
 New-AzResourceGroupDeployment @Deployment
@@ -36,9 +36,9 @@ New-AzResourceGroupDeployment @Deployment
 # Deploy bicep file for naming error examples
 
 $Deployment = @{
-      Name                  = "pwsh.example.naming.errors"
-      TemplateFile          = "./example.naming.errors/main.bicep"
-      ResourceGroupName     = $resourceGroup
+      Name              = "pwsh.example.naming.errors"
+      TemplateFile      = "./example.naming.errors/main.bicep"
+      ResourceGroupName = $resourceGroup
 }
       
 New-AzResourceGroupDeployment @Deployment
@@ -53,3 +53,13 @@ $Deployment = @{
 }
       
 New-AzResourceGroupDeployment @Deployment
+
+# Deploy bicep file for resource group naming example
+
+$Deployment = @{
+      Name         = "pwsh.example.naming.subscriptionScope"
+      TemplateFile = "./example.naming.subscriptionScope/main.bicep"
+      Location     = "West Europe"
+}
+      
+New-AzSubscriptionDeployment @Deployment

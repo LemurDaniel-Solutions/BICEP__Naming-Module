@@ -106,6 +106,8 @@ To use the Naming-Module, the exported **schemaReference** and **nameGenerator()
 
 > <span style="color:orange">**The Module also forces an error failing the Function-Call when a parameter defined as required in the **namingSchemaReference** is not provided!**</span>
 
+> <span style="color:orange">**The Module can be imported to modules with any scope**</span>
+
 ```Bicep
 // This can also be imported from a Bicep-Module-Registry
 // import { namingSchemaReference, nameGenerator } from 'br:bicepnamingpoc001.azurecr.io/bicep/module.naming:1.0.0'

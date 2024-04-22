@@ -157,6 +157,27 @@ var namingSchemaReference = {
   }
 
   resources: {
+    'Microsoft.Resources/resourceGroups': {
+      enforceAllLowerCase: true
+
+      delimiter: '-'
+      pattern: ['rg', '<PREFIX>', '<NAME>', '<LOCATION>', '<ENVIRONMENT>', '<POSTFIX_INDEX>']
+      required: [
+        'NAME'
+        'LOCATION'
+        'ENVIRONMENT'
+        'POSTFIX_INDEX'
+      ]
+      format: {
+        POSTFIX_INDEX: '{0:000}'
+      }
+      validate: {
+        POSTFIX_INDEX: {
+          range: [0, 999]
+        }
+      }
+    }
+
     'Microsoft.KeyVault/vaults': {
       enforceAllLowerCase: true
 
