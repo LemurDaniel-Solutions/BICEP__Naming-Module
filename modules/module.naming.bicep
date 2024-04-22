@@ -157,6 +157,27 @@ var namingSchemaReference = {
   }
 
   resources: {
+    'Microsoft.Subscription/alias': {
+      enforceAllLowerCase: true
+
+      delimiter: '-'
+      pattern: ['<COMPANY>', '<NAME>', '<ENVIRONMENT>', 'subs', '<IDENTIFIER>']
+      required: [
+        'COMPANY'
+        'NAME'
+        'ENVIRONMENT'
+        'IDENTIFIER'
+      ]
+      format: {
+        POSTFIX_INDEX: '{0:000#}'
+      }
+      validate: {
+        POSTFIX_INDEX: {
+          range: [0, 9999]
+        }
+      }
+    }
+
     'Microsoft.Resources/resourceGroups': {
       enforceAllLowerCase: true
 

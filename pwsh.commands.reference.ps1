@@ -23,6 +23,9 @@ Publish-AzBicepModule `
 
 #>
 
+
+#############################################################
+#
 # Deploy bicep file for naming examples
 
 $Deployment = @{
@@ -33,6 +36,9 @@ $Deployment = @{
       
 New-AzResourceGroupDeployment @Deployment
 
+
+#############################################################
+#
 # Deploy bicep file for naming error examples
 
 $Deployment = @{
@@ -43,6 +49,9 @@ $Deployment = @{
       
 New-AzResourceGroupDeployment @Deployment
 
+
+#############################################################
+#
 # Deploy bicep file for vnet naming example
 
 $Deployment = @{
@@ -54,12 +63,29 @@ $Deployment = @{
       
 New-AzResourceGroupDeployment @Deployment
 
+
+#############################################################
+#
 # Deploy bicep file for resource group naming example
 
 $Deployment = @{
-      Name         = "pwsh.example.naming.subscriptionScope"
-      TemplateFile = "./example.naming.subscriptionScope/main.bicep"
+      Name         = "pwsh.example.naming.subsScope"
+      TemplateFile = "./example.naming.subsScope/main.bicep"
       Location     = "West Europe"
 }
       
 New-AzSubscriptionDeployment @Deployment
+
+
+#############################################################
+#
+# Deploy bicep file for subscription naming example
+
+$Deployment = @{
+      Name              = "pwsh.example.naming.mmgScope"
+      TemplateFile      = "./example.naming.mmgScope/main.bicep"
+      ManagementGroupId = (Get-AzContext).Tenant.Id
+      Location          = "West Europe"
+}
+      
+New-AzManagementGroupDeployment @Deployment
