@@ -4,7 +4,7 @@
 
 */
 
-import { namingSchemaReference, nameGenerator } from 'module.naming.bicep'
+import { defaultSchemaReference, nameGenerator } from 'module.naming.bicep'
 
 /*
 
@@ -28,16 +28,12 @@ param vnetConfig {
 */
 
 resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-04-01' = {
-  name: nameGenerator(
-    'Microsoft.Network/virtualNetworks',
-    namingSchemaReference,
-    {
-      name: vnetConfig.name
-      location: location
-      environment: environment
-      postfixIndex: 1
-    }
-  )
+  name: nameGenerator('Microsoft.Network/virtualNetworks', defaultSchemaReference, {
+    name: vnetConfig.name
+    location: location
+    environment: environment
+    postfixIndex: 1
+  })
   location: location
 
   properties: {
@@ -46,16 +42,12 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-04-01' = {
     }
     subnets: [
       for (subnetCidr, index) in vnetConfig.subnets: {
-        name: nameGenerator(
-          'Microsoft.Network/virtualNetworks/subnets',
-          namingSchemaReference,
-          {
-            name: vnetConfig.name
-            location: location
-            environment: environment
-            postfixIndex: index + 1
-          }
-        )
+        name: nameGenerator('Microsoft.Network/virtualNetworks/subnets', defaultSchemaReference, {
+          name: vnetConfig.name
+          location: location
+          environment: environment
+          index: index + 1
+        })
 
         properties: {
           addressPrefix: subnetCidr

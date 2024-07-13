@@ -11,12 +11,12 @@ param environment string = 'dev'
 
 // Import schema and function from Naming-Module
 // import { namingSchemaReference, nameGenerator } from 'br:bicepnamingpoc001.azurecr.io/module.naming:1.0.0'
-import { namingSchemaReference, nameGenerator } from '../modules/module.naming.bicep'
+import { defaultSchemaReference, nameGenerator } from '../modules/module.naming.bicep'
 
 // Use 'nameGenerator()'-Function for consistent naming.
 output subscriptionNamingExample string = nameGenerator(
   'Microsoft.Subscription/alias',
-  namingSchemaReference,
+  defaultSchemaReference,
   {
     company: 'adesso'
     name: 'demo'

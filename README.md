@@ -1,12 +1,15 @@
-## **Bicep Naming-Module POC** - An approach to handle consistent naming in Bicep-Modules
+## **Bicep Naming-Module** - An approach to consistent naming in Bicep
 
-#### I haven't found anything else good for naming in Bicep yet, and Microsoft just always seems to use vars and implement naming in every module. So, sharing this one here for a centralized solution. Hope it helps anyone else! 🚀😊
+#### I haven't found anything else good for naming in Bicep and Microsoft just always seems to use vars and implement naming in every module. So, sharing this one here for a centralized solution. Hope it helps anyone else! 🚀😊
 
 This approach for a Naming-Module uses:
 - [User Defined Functions](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/user-defined-functions)
 - [Import and Export](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-import)
 
 <br>
+
+
+# TODO !!! Update README.md !!!
 
 ```Bicep
 import { namingSchemaReference, nameGenerator } from 'br:bicepnamingpoc001.azurecr.io/module.naming:1.0.0'
