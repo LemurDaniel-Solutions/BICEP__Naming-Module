@@ -9,7 +9,9 @@ This approach for a Naming-Module uses:
 <br>
 
 
-# TODO !!! Update README.md !!!
+# Look into [Module-Registry](https://github.com/LemurDaniel/BICEP__Module-Registry/blob/master/governance/naming/module.bicep) for a more recent Versions of this.
+
+---
 
 ```Bicep
 import { namingSchemaReference, nameGenerator } from 'br:bicepnamingpoc001.azurecr.io/module.naming:1.0.0'
@@ -21,10 +23,10 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-04-01' = {
     'Microsoft.Network/virtualNetworks',
     namingSchemaReference,
     {
+      index: 1
       name: vnetConfig.name
       location: location
       environment: environment
-      postfixIndex: 1
     }
   )
   location: location
@@ -34,12 +36,6 @@ resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-04-01' = {
   }
 }
 ```
-<br>
-
-> <span style="color:orange">**Since `User Defined Functions` were released with Bicep 0.26.x, this approach requires Bicep 0.26.x or higher**</span>
-
-> <span style="color:orange">**In some previous versions, it can be activated as an experimental feature**</span>
-
 <br>
 
 ## How To Use
