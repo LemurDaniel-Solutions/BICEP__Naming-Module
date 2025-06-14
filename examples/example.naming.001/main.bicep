@@ -11,34 +11,34 @@ param environment string = 'dev'
 */
 
 import { defaultSchema } from '../../modules/naming-schema/module.bicep'
-import { name, nameKind } from '../../modules/naming/module.bicep'
+import { genName, genNameId } from '../../modules/naming/module.bicep'
 
 // Use 'nameGenerator()'-Function for consistent naming.
-output kvNamingExample string = name('Microsoft.KeyVault/vaults', defaultSchema, {
+output kvNamingExample string = genName('Microsoft.KeyVault/vaults', defaultSchema, location, {
   name: 'secrets'
-  location: location
   environment: environment
 })
-output storageAccountNamingExample string = name('Microsoft.Storage/storageAccounts', defaultSchema, {
+output storageAccountNamingExample string = genName('Microsoft.Storage/storageAccounts', defaultSchema, location, {
   name: 'objects'
-  location: location
   environment: environment
 })
-output functionAppNamingExample string = nameKind('Microsoft.Web/sites', 'functionApp', defaultSchema, {
+output functionAppNamingExample string = genName('Microsoft.Web/sites::function', defaultSchema, location, {
   name: 'apps'
-  location: location
   environment: environment
   index: 1
 })
-output dataDiskNamingExample string = nameKind('Microsoft.Compute/disks', 'data', defaultSchema, {
+output appServiceNamingExample string = genName('Microsoft.Web/sites::app', defaultSchema, location, {
   name: 'apps'
-  location: location
   environment: environment
   index: 1
 })
-output osDiskNamingExample string = nameKind('Microsoft.Compute/disks', 'os', defaultSchema, {
+output dataDiskNamingExample string = genName('Microsoft.Compute/disks::data', defaultSchema, location, {
   name: 'apps'
-  location: location
+  environment: environment
+  index: 1
+})
+output osDiskNamingExample string = genName('Microsoft.Compute/disks::os', defaultSchema, location, {
+  name: 'apps'
   environment: environment
   index: 1
 })

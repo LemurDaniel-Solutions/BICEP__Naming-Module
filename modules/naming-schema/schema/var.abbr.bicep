@@ -1,31 +1,37 @@
+////////////////////////////////////////////////////////////////////
+///// Base on Azure Recommendations for abbreviations
+///// https://learn.microsoft.com/en-us/azure/cloud-adoption-framework/ready/azure-best-practices/resource-abbreviations
+
 @export()
 @description('Default abbreviations for resources')
 var defaultAbbreviations = {
   // AI + machine learning
   'Microsoft.Search/searchServices': 'srch'
-  'Microsoft.MachineLearningServices/workspaces (kind: Hub)': 'hub'
-  'Microsoft.MachineLearningServices/workspaces (kind: Project)': 'proj'
+
+  'Microsoft.MachineLearningServices/workspaces::default': 'hub'
+  'Microsoft.MachineLearningServices/workspaces::Hub': 'hub'
+  'Microsoft.MachineLearningServices/workspaces::Project': 'proj'
+
   'Microsoft.VideoIndexer/accounts': 'avi'
   'Microsoft.MachineLearningServices/workspaces': 'mlw'
-  'Microsoft.BotService/botServices (kind: azurebot)': 'bot'
-  'Microsoft.CognitiveServices/accounts': {
-    '*': 'cog'
-    cognitiveServices: 'cog'
-    AIServices: 'ais'
-    OpenAi: 'oai'
-    ComputerVision: 'cv'
-    ContentModerator: 'cm'
-    ContentSafety: 'cs'
-    CustomVisionPrediction: 'cstv'
-    CustomVisionTraining: 'cstvt'
-    FormRecognizer: 'di'
-    Face: 'face'
-    HealthInsights: 'hi'
-    ImmersiveReader: 'ir'
-    TextAnalytics: 'lang'
-    SpeechServices: 'spch'
-    TextTranslation: 'trsl'
-  }
+  'Microsoft.BotService/botServices::azurebot': 'bot'
+
+  'Microsoft.CognitiveServices/accounts/projects': 'proj'
+  'Microsoft.CognitiveServices/accounts::OpenAI': 'oai'
+  'Microsoft.CognitiveServices/accounts::CognitiveServices': 'cog'
+  'Microsoft.CognitiveServices/accounts::AIServices': 'aif'
+  'Microsoft.CognitiveServices/accounts::ComputerVision': 'cv'
+  'Microsoft.CognitiveServices/accounts::ContentModerator': 'cm'
+  'Microsoft.CognitiveServices/accounts::ContentSafety': 'cs'
+  'Microsoft.CognitiveServices/accounts::CustomVision.Prediction': 'cstv'
+  'Microsoft.CognitiveServices/accounts::CustomVision.Training': 'cstvt'
+  'Microsoft.CognitiveServices/accounts::FormRecognizer': 'di'
+  'Microsoft.CognitiveServices/accounts::Face': 'face'
+  'Microsoft.CognitiveServices/accounts::HealthInsights': 'hi'
+  'Microsoft.CognitiveServices/accounts::ImmersiveReader': 'ir'
+  'Microsoft.CognitiveServices/accounts::TextAnalytics': 'lang'
+  'Microsoft.CognitiveServices/accounts::SpeechServices': 'spch'
+  'Microsoft.CognitiveServices/accounts::TextTranslation': 'trsl'
 
   // Analytics and IoT
   'Microsoft.AnalysisServices/servers': 'as'
@@ -44,65 +50,64 @@ var defaultAbbreviations = {
   'Microsoft.EventHub/namespaces': 'evhns'
   'Microsoft.EventHub/namespaces/eventHubs': 'evh'
   'Microsoft.EventGrid/domains': 'evgd'
+  'Microsoft.EventGrid/namespaces': 'evgns'
   'Microsoft.EventGrid/eventSubscriptions': 'evgs'
   'Microsoft.EventGrid/domains/topics': 'evgt'
   'Microsoft.EventGrid/systemTopics': 'egst'
-  'Microsoft.HDInsight/clusters (kind: Hadoop)': 'hadoop'
-  'Microsoft.HDInsight/clusters (kind: HBase)': 'hbase'
-  'Microsoft.HDInsight/clusters (kind: Kafka)': 'kafka'
-  'Microsoft.HDInsight/clusters (kind: Spark)': 'spark'
-  'Microsoft.HDInsight/clusters (kind: Storm)': 'storm'
-  'Microsoft.HDInsight/clusters (kind: MLServices)': 'mls'
+
+  'Microsoft.HDInsight/clusters::Hadoop': 'hadoop'
+  'Microsoft.HDInsight/clusters::HBase': 'hbase'
+  'Microsoft.HDInsight/clusters::Kafka': 'kafka'
+  'Microsoft.HDInsight/clusters::Spark': 'spark'
+  'Microsoft.HDInsight/clusters::Storm': 'storm'
+  'Microsoft.HDInsight/clusters::MLServices': 'mls'
+
   'Microsoft.Devices/IotHubs': 'iot'
   'Microsoft.Devices/provisioningServices': 'provs'
   'Microsoft.Devices/provisioningServices/certificates': 'pcert'
   'Microsoft.PowerBIDedicated/capacities': 'pbi'
   'Microsoft.TimeSeriesInsights/environments': 'tsi'
 
-  // Compute and Web
-  'Microsoft.Web/hostingEnvironments': 'host'
-  // 'Microsoft.Web/hostingEnvironments': 'ase'
-  'Microsoft.Web/serverFarms': 'asp'
-  'Microsoft.LoadTestService/loadTests': 'lt'
-  'Microsoft.Compute/availabilitySets': 'avail'
-  'Microsoft.HybridCompute/machines': 'arcs'
-  'Microsoft.Kubernetes/connectedClusters': 'arck'
-  'Microsoft.HybridCompute/privateLinkScopes': 'pls'
-  'Microsoft.HybridCompute/gateways': 'arcgw'
+  // Compute and web
   'Microsoft.Batch/batchAccounts': 'ba'
-  'Microsoft.Compute/cloudServices': 'cld'
   'Microsoft.Communication/communicationServices': 'acs'
+  'Microsoft.Compute/availabilitySets': 'avail'
   'Microsoft.Compute/diskEncryptionSets': 'des'
+
+  'Microsoft.Compute/disks::default': 'disk'
+  'Microsoft.Compute/disks::data': 'datadisk'
+  'Microsoft.Compute/disks::os': 'osdisk'
+
   'Microsoft.Compute/galleries': 'gal'
-  'Microsoft.VirtualMachineImages/imageTemplates': 'it'
-
-  'Microsoft.Web/sites': {
-    '*': 'app'
-    app: 'app'
-    functionApp: 'func'
-  }
-
-  'Microsoft.Compute/disks': {
-    '*': 'disk'
-    Data: 'disk'
-    OS: 'osdisk'
-  }
-
-  'Microsoft.NotificationHubs/namespaces/notificationHubs': 'ntf'
-  'Microsoft.NotificationHubs/namespaces': 'ntfns'
   'Microsoft.Compute/proximityPlacementGroups': 'ppg'
   'Microsoft.Compute/restorePointCollections': 'rpc'
   'Microsoft.Compute/snapshots': 'snap'
-  'Microsoft.Web/staticSites': 'stapp'
   'Microsoft.Compute/virtualMachines': 'vm'
   'Microsoft.Compute/virtualMachineScaleSets': 'vmss'
+
+  'Microsoft.HybridCompute/gateways': 'arcgw'
+  'Microsoft.HybridCompute/machines': 'arcs'
+  'Microsoft.HybridCompute/privateLinkScopes': 'pls'
+
+  'Microsoft.Kubernetes/connectedClusters': 'arck'
+  'Microsoft.LoadTestService/loadTests': 'lt'
   'Microsoft.Maintenance/maintenanceConfigurations': 'mc'
-  'Microsoft.Storage/storageAccounts (kind: VMStorage)': 'stvm'
+  'Microsoft.NotificationHubs/namespaces/notificationHubs': 'ntf'
+  'Microsoft.NotificationHubs/namespaces': 'ntfns'
+  'Microsoft.VirtualMachineImages/imageTemplates': 'it'
+
+  'Microsoft.Web/hostingEnvironments': 'ase'
+  'Microsoft.Web/serverFarms': 'asp'
+
+  'Microsoft.Web/sites::default': 'app'
+  'Microsoft.Web/sites::app': 'app'
+  'Microsoft.Web/sites::function': 'func'
+  'Microsoft.Web/staticSites': 'stapp'
 
   // Containers
   'Microsoft.ContainerService/managedClusters': 'aks'
-  'Microsoft.ContainerService/managedClusters/agentPools (mode: System)': 'npsystem'
-  'Microsoft.ContainerService/managedClusters/agentPools (mode: User)': 'np'
+  'Microsoft.ContainerService/managedClusters/agentPools::System': 'npsystem'
+  'Microsoft.ContainerService/managedClusters/agentPools::User': 'np'
   'Microsoft.App/containerApps': 'ca'
   'Microsoft.App/managedEnvironments': 'cae'
   'Microsoft.ContainerRegistry/registries': 'cr'
@@ -111,23 +116,24 @@ var defaultAbbreviations = {
   'Microsoft.ServiceFabric/managedClusters': 'sfmc'
 
   // Databases
-  'Microsoft.DocumentDB/databaseAccounts/sqlDatabases': 'cosmos'
-  'Microsoft.DocumentDB/databaseAccounts (kind: ApacheCassandra)': 'coscas'
-  'Microsoft.DocumentDB/databaseAccounts (kind: MongoDB)': 'cosmon'
-  'Microsoft.DocumentDB/databaseAccounts (kind: NoSQL)': 'cosno'
-  'Microsoft.DocumentDB/databaseAccounts (kind: Table)': 'costab'
-  'Microsoft.DocumentDB/databaseAccounts (kind: ApacheGremlin)': 'cosgrm'
+  'Microsoft.DocumentDB/databaseAccounts::GlobalDocumentDB': 'cosmos'
+  'Microsoft.DocumentDB/databaseAccounts::ApacheCassandra': 'coscas'
+  'Microsoft.DocumentDB/databaseAccounts::MongoDB': 'cosmon'
+  'Microsoft.DocumentDB/databaseAccounts::NoSQL': 'cosno'
+  'Microsoft.DocumentDB/databaseAccounts::Table': 'costab'
+  'Microsoft.DocumentDB/databaseAccounts::ApacheGremlin': 'cosgrm'
+
   'Microsoft.DBforPostgreSQL/serverGroupsv2': 'cospos'
   'Microsoft.Cache/Redis': 'redis'
+
   'Microsoft.Sql/servers': 'sql'
-  'Microsoft.Sql/servers/databases': 'sqldb'
+  'Microsoft.Sql/servers/databases::default': 'sqldb'
+  'Microsoft.Sql/servers/databases::StretchDatabase': 'sqlstrdb'
+
   'Microsoft.Sql/servers/jobAgents': 'sqlja'
   'Microsoft.Sql/servers/elasticpool': 'sqlep'
-  'Microsoft.DBforMariaDB/servers': 'maria'
-  'Microsoft.DBforMariaDB/servers/databases': 'mariadb'
   'Microsoft.DBforMySQL/servers': 'mysql'
   'Microsoft.DBforPostgreSQL/servers': 'psql'
-  'Microsoft.Sql/servers/databases (kind: StretchDatabase)': 'sqlstrdb'
   'Microsoft.Sql/managedInstances': 'sqlmi'
 
   // Developer tools
@@ -140,6 +146,9 @@ var defaultAbbreviations = {
   'Microsoft.Dashboard/grafana': 'amg'
 
   // Integration
+  'Microsoft.ApiManagement/service': 'apim'
+  'Microsoft.Logic/integrationAccounts': 'ia'
+  'Microsoft.Logic/workflows': 'logic'
   'Microsoft.ServiceBus/namespaces': 'sbns'
   'Microsoft.ServiceBus/namespaces/queues': 'sbq'
   'Microsoft.ServiceBus/namespaces/topics': 'sbt'
@@ -155,6 +164,7 @@ var defaultAbbreviations = {
   'Microsoft.Blueprint/blueprints': 'bp'
   'Microsoft.Blueprint/blueprints/artifacts': 'bpa'
   'Microsoft.Insights/dataCollectionEndpoints': 'dce'
+  'Microsoft.Resources/deploymentScripts': 'script'
   'Microsoft.OperationalInsights/workspaces': 'log'
   'Microsoft.OperationalInsights/querypacks': 'pack'
   'Microsoft.Management/managementGroups': 'mg'
@@ -184,16 +194,18 @@ var defaultAbbreviations = {
   'Microsoft.Network/expressRouteCircuits': 'erc'
   'Microsoft.Network/expressRoutePorts': 'erd'
   //'Microsoft.Network/virtualNetworkGateways': 'ergw'
+  'Microsoft.Cdn/profiles::afd': 'afd'
   'Microsoft.Cdn/profiles/afdEndpoints': 'fde'
   'Microsoft.Network/frontdoorWebApplicationFirewallPolicies': 'fdfp'
   'Microsoft.Network/frontDoors': 'afd'
   'Microsoft.Network/ipGroups': 'ipg'
-  'Microsoft.Network/loadBalancers': 'lb'
-  //'Microsoft.Network/loadBalancers': 'lbe'
+  'Microsoft.Network/loadBalancers::internal': 'lbi'
+  'Microsoft.Network/loadBalancers::external': 'lbe'
   'Microsoft.Network/loadBalancers/inboundNatRules': 'rule'
   'Microsoft.Network/localNetworkGateways': 'lgw'
   'Microsoft.Network/natGateways': 'ng'
   'Microsoft.Network/networkInterfaces': 'nic'
+  'Microsoft.Network/networkSecurityPerimeters': 'nsp'
   'Microsoft.Network/networkSecurityGroups': 'nsg'
   'Microsoft.Network/networkSecurityGroups/securityRules': 'nsgsr'
   'Microsoft.Network/networkWatchers': 'nw'

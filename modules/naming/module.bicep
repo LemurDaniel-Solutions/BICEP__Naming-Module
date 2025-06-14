@@ -18,12 +18,32 @@ type typeNaming = {
 */
 
 @export()
-func nameKind(resourceType string, kind string, schema object, parameters object) string =>
-  nameGenerator(resourceType, kind, schema, parameters)
+func genNameId(resourceType string, kind string, schema object, location string, parameters object) string =>
+  nameGenerator(resourceType, kind, schema, {
+    location: location
+    ...parameters
+  })
 
 @export()
-func name(resourceType string, schema object, parameters object) string =>
-  nameGenerator(resourceType, null, schema, parameters)
+func genName(resourceType string, schema object, location string, parameters object) string =>
+  nameGenerator(resourceType, null, schema, {
+    location: location
+    ...parameters
+  })
+
+@export()
+func genNameIdExtraParam(
+  resourceType string,
+  kind string,
+  schema object,
+  location string,
+  parameters object,
+  extraParameters object
+) string => genNameId(resourceType, kind, schema, location, { ...parameters, ...extraParameters })
+
+@export()
+func genNameExtraParam(resourceType string, schema object, location string, parameters object, extraParameters object) string =>
+  genName(resourceType, schema, location, { ...parameters, ...extraParameters })
 
 /*
 
@@ -35,21 +55,11 @@ func name(resourceType string, schema object, parameters object) string =>
 @export()
 @description('This is a special shortcut function for generating a resource group name. This is usefull for subscription scope deployments, so the resource group reference can be passed to the following modules, while still having an easy interface to use the naming module with.')
 func nameResourceGroup(
-  location string?,
+  location string,
   naming {
     index: int?
     overwrite: string?
     *: string?
   },
   schema object
-) string =>
-  name(
-    'Microsoft.Resources/resourceGroups',
-    schema,
-    union(
-      {
-        location: location
-      },
-      naming ?? {}
-    )
-  )
+) string => genName('Microsoft.Resources/resourceGroups', schema, location, naming)

@@ -1,60 +1,125 @@
-## **Bicep Naming-Module** - An approach to consistent naming in Bicep
+## **Bicep Naming-Module** 🚀🔤  
+A Consistent Approach to Resource Naming in Bicep
 
-#### I haven't found anything else good for naming in Bicep and Microsoft just always seems to use vars and implement naming in every module. So, sharing this one here for a centralized solution. Hope it helps anyone else! 🚀😊
-
-This approach for a Naming-Module uses:
-- [User Defined Functions](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/user-defined-functions)
-- [Import and Export](https://learn.microsoft.com/en-us/azure/azure-resource-manager/bicep/bicep-import)
-
-<br>
-
-
-
-# ⚠️ Look into [Module-Registry](https://github.com/LemurDaniel/BICEP__Module-Registry/blob/master/governance/naming/module.bicep) for a more recent Versions of this. ⚠️
+> **Note:**  
+> For the latest updates, check [Module-Registry](https://github.com/LemurDaniel/BICEP__Module-Registry/blob/master/governance/naming/module.bicep). 📝
 
 ---
 
-### Following: Outdated Module:
+### Why This Module?
+
+- **Centralized Naming**: Maintain conventions in one place. 🗃️
+- **Consistency**: All modules use the same logic. 🔄
+- **Extensible**: Add new abbreviations, locations, or patterns as needed. ➕
+- **Easy Integration**: Just import and call the functions. 🧩
+- **Any Scope Supported**: Custom functions can be imported and used at any scope, unlike module. 🦖
+
+**Feedback and contributions welcome!** 🙌
 
 ---
 
-```Bicep
-import { defaultSchema } from './modules/naming-schema/module.bicep'
-import { name, nameKind } from './modules/naming/module.bicep'
+## 🚀 Quick Start
 
-resource virtualNetwork 'Microsoft.Network/virtualNetworks@2023-04-01' = {
+### Generate a Storage Account Name 📦
 
-  // Will now generate a name such as: vnet-demo-euwe-dev-001
-  name: nameGenerator('Microsoft.Network/virtualNetworks', defaultSchema,
-    {
-      index: 1
-      name: vnetConfig.name
-      location: location
-      environment: environment
-    }
-  )
+```bicep
+import { defaultSchema } from '../../modules/naming-schema/module.bicep'
+import { genName, genNameId } from '../../modules/naming/module.bicep'
 
+// Use 'genName()' for consistent naming.
+resource storageAccount 'Microsoft.Storage/storageAccounts@2023-01-01' = {
+  name: genName('Microsoft.Storage/storageAccounts', defaultSchema, {
+    name: 'files'
+    location: location
+    environment: environment
+  })
   location: location
-  properties: {
-    // Define properties for the Virtual Network.
+  kind: 'StorageV2'
+  sku: {
+    name: 'Standard_LRS'
   }
+  properties: {}
 }
 ```
-<br>
 
-## How To Use
+### Use Different Abbreviations for the Same Resource 🔄
 
-### Defining the Naming-Module
+```bicep
+output functionAppNamingExample string = genName('Microsoft.Web/sites::function', defaultSchema, {
+  name: 'apps'
+  location: location
+  environment: environment
+  index: 1
+})
+output appServiceNamingExample string = genName('Microsoft.Web/sites::app', defaultSchema, {
+  name: 'apps'
+  location: location
+  environment: environment
+  index: 1
+})
+```
 
-The Naming-Module consists of three resources, which can be imported by other modules:
-- `name()`: Generating name for a normal resource
-- `nameKind()`: Generating based on kind. FunctionApp vs. App, OSdisk vs DataDisk, etc.
-- `schema`: A reference for defining names for each resource, which is provided to the **name()** upon calling it
+---
 
-The **namingSchemaReference**:
+## ⚙️ How It Works
 
-```Bicep
+### Name Generator Functions 🛠️
 
+There are two main functions, each supporting multiple overloads:
+
+- `genName(<schema>, <resourceType>, <location>, <parameters>)`  
+  Generates a name based on the resource type and parameters.
+- `genName(<schema>, <resourceType>::kind, <location>, <parameters>)`  
+  Differentiates between kinds of the same resource type.
+- `genNameId(<schema>, <resourceType>, <id>, <location>, <parameters>)`  
+  Generates a unique identifier for a resource or group.
+- `genNameId(<schema>, <resourceType>::kind, <id>, <location>, <parameters>)`  
+  Combines kind and id for fine-grained naming.
+
+### The Naming Schema 🗂️
+
+The schema separates abbreviations, locations, and other conventions into reusable files.
+
+#### Locations
+
+Map Azure locations to short names:
+
+```bicep
+@export()
+@description('Default abbreviations for locations')
+var defaultLocations = {
+  global: 'glob'
+  'West Europe': 'euwe'
+  westeurope: 'euwe'
+  'Germany North': 'geno'
+  germanynorth: 'geno'
+  'Germany West Central': 'gewc'
+  germanywestcentral: 'gewc'
+}
+```
+
+#### Abbreviations
+
+Map resource types (and kinds) to abbreviations:
+- `<resourceType>::kind` refers to different namings for the same resource
+- `genName(<resourceType>::kind, <schema>, <parameters>)` 
+- You can 
+```bicep
+@export()
+@description('Default abbreviations for resources')
+var defaultAbbreviations = {
+  'Microsoft.Search/searchServices': 'srch'
+  'Microsoft.MachineLearningServices/workspaces::default': 'hub'
+
+  'Microsoft.Web/sites::default': 'app'
+  'Microsoft.Web/sites::app': 'app'
+  'Microsoft.Web/sites::function': 'func'
+}
+```
+
+#### Full Naming Schema Example 📖
+
+```bicep
 import { defaultAbbreviations } from 'var.abbr.bicep'
 import { defaultLocations } from 'var.location.bicep'
 
@@ -69,12 +134,22 @@ var schemaReference = {
     'Microsoft.Storage/storageAccounts': true
   }
 
+  mappings: {
+    // Will map any entry of parameter ENVIRONMENT to another value.
+    // 
+    // environment: {
+    //   development: 'dev'
+    // }
+  }
+
   /*
     NOTE:
-    - <>        : denote key words which are replaced by parameters
-    - <?>       : denote a optional parameter. If not provided will be empty
-    - <?;-{0}>  : optional parameter with a custom format. (Use this for optionals, because it optionally deploy the seperator '-')
-    -           : everything else is treated as a string.
+    - <PARAMETER>        : Key words that are replaced by parameters.
+    - <?PARAMETER>       : ? Defines Optional parameters, which are omitted if not set.
+    - <?PARAMETER;-{0}>  : This format is preferred so that the separator '-' is only set if the parameter is present.
+    - <PARAMETER;{0:000}>: This format is preferred so that the index is always formatted with leading zeros.	
+    - <PARAMETER;{0}>    : The format after the ; is a format string and follows the syntax of the Bicep format('{0}', value) function.
+    -                    : Everything else is interpreted as a normal string.
 
     SPECIAL PARAMETERS:
     The following only applies for modules, that correctly implement the naming schema.
@@ -95,69 +170,72 @@ var schemaReference = {
   // If you want to start at 0, you can set this to -1.
   indexModifier: 0
   patterns: {
-    default: '<ABBREVIATION><?PREFIX;-{0}>-<LOCATION>-<ENVIRONMENT>-<NAME>'
+    // The pattern search logic 
+    // - Look for a pattern with the resourceType and a specific kind.
+    // - If not found, look for a pattern with the resourceType and the default kind.
+    // - If not found, fall back to the default pattern.
+    // - If not found, fail with an error.
 
-    'Microsoft.Subscription/alias': '<COMPANY>-<NAME>-<ENVIRONMENT>-subs-<IDENTIFIER;{0:0000}>'
+    /*
+      The function can be call without an id or with an id.
+      - genName(<resourceType>, <schema>, <location>, <parameters>, <extra>)
+      - genName(<resourceType>::<kind>, <schema>, <location>, <parameters>, <extra>)
 
-    // 
-    'Microsoft.KeyVault/vaults': 'kv<?PREFIX;-{0}>-<LOCATION>-<ENVIRONMENT>-<UNIQUE_STRING_5>'
-    'Microsoft.Storage/storageAccounts': 'st<?PREFIX><LOCATION><ENVIRONMENT><NAME>'
+      The id allows identification of a specific resource.
+      - genNameId(<resourceType>, <id>, <schema>, <location>, <parameters>, <extra>)
+      - genNameId(<resourceType>::<kind>, <id>, <schema>, <location>, <parameters>, <extra>)
+    */
 
-    // Compute
-    'Microsoft.Compute/disks': {
-      data: '<ABBREVIATION><INDEX;{0:00}>-<NAME>-<ENVIRONMENT>'
-      OS: '<ABBREVIATION>-<NAME>-<ENVIRONMENT>'
+    /*
+      The entries can be defined in the following ways:
+    
+      A single pattern for a resource type:
+      - SINGLE:: must be prefixed for technical reasons. No way to tell strings apart from objects at bicep runtime.
+      'SINGLE::Microsoft.Web/serverfarms': '<TYPE>-<PROJECT_NAME>-<LOCATION>-<INDEX;{0:000}>'
+
+      Different patterns for multiple <id> or <kind> of a resource type:
+      - MAP:: must be prefixed to differentiate for technical reasons.
+      - <id> takes precedence over <kind>.
+      'MAP::<resource_type>': {
+        default: '<TYPE>-<PROJECT_NAME>-<LOCATION>-<INDEX;{0:000}>'
+        <kind>: '<TYPE>-<PROJECT_NAME>-<LOCATION>-<INDEX;{0:000}>'
+        <id>: '<TYPE>-<PROJECT_NAME>-<LOCATION>-<INDEX;{0:000}>'
+      }
+    */
+
+    ////////////////////////////////////////////////
+    ////////////////////////////////////////////////
+
+    // This is the main Fallback pattern for resources.
+    // - If no specific pattern is defined for a resource type, this will be used. 
+    // - When deactivated, any resource type without a specific pattern will fail with an error.
+    //   like this: 'No pattern found for resourceType: SINGLE::Microsoft.Web/serverfarms and kind: default'
+    default: '<TYPE><?PREFIX;-{0}>-<LOCATION>-<ENVIRONMENT>-<NAME><?INDEX;-{0:00}>'
+
+    ////////////////////////////////////////////////
+    ////////////////////////////////////////////////
+
+    'MAP::Microsoft.Compute/disks': {
+      data: '<TYPE><INDEX;{0:00}>-<NAME>-<ENVIRONMENT>'
+      os: '<TYPE>-<NAME>-<ENVIRONMENT>'
     }
+    
+    'SINGLE::Microsoft.ContainerRegistry/registries': 'acr<?PREFIX;-{0}>-<LOCATION>-<ENVIRONMENT>-<NAME>'
+    'SINGLE::Microsoft.Network/virtualNetworks/virtualNetworkPeerings': 'vnet<?PREFIX;-{0}>-<LOCATION>-<ENVIRONMENT>-<NAME>'
+    'SINGLE::Microsoft.Cdn/profiles': 'afd<?PREFIX;-{0}>-<LOCATION>-<ENVIRONMENT>-<NAME>'
+    'SINGLE::Microsoft.Cdn/profiles/afdEndpoints': 'fde<?PREFIX;-{0}>-<LOCATION>-<ENVIRONMENT>-<NAME>'
+    'SINGLE::Microsoft.Cdn/profiles/originGroups': 'ogrp<?PREFIX;-{0}>-<LOCATION>-<ENVIRONMENT>-<NAME>'
+    'SINGLE::Microsoft.Cdn/profiles/ruleSets': 'rset<?PREFIX><LOCATION><ENVIRONMENT><NAME>'
   }
-
   validate: {
     default: {
-      INDEX: {
-        range: [0, 999]
-      }
+      INDEX: { range: [0, 999] }
     }
-
-    // The logic checks for any type that starts with 'Microsoft.Compute/disks'
     'Microsoft.Compute/disks': {
-      INDEX: {
-        range: [0, 10]
-      }
+      INDEX: { range: [0, 10] }
     }
   }
 }
 ```
 
-
-### NOTES:
-
-The Keywords used in the pattern are customizable. For each keyword, a corresponding parameter is searched in the **parameters**-Object given on the function call. For Parameters like <CUSTOM_KEYWORD>, a camelcase parameter customKeyword is expected.
-
-If it is required and not provided, an error such as the following is forced by the function, preventing incorrect naming to be deployed.
-
-![example.error.missingParameter](./_resources/example.error.mssingParameter.png)
-
-<br>
-
-
-## Some Advantages
-
-### Naming maintained at one place
-
-This approach ensures that one or multiple Naming-Conventions are maintained in one central Naming-Module, that can be used and implemented by any other modules.
-
-### Consistent naming across modules
-
-Since Naming is implemented in one central Naming-Module and not different modules, consistent naming is ensured by every module implementing it.
-
-### Easy to use and implement
-
-It is simple to implement in any module with just adding the Import-Statement and the Function-Calls.
-
-
-
-<br>
-
-
-### TODOS, Ideas and stuff
-
-- Add more naming examples and implementations for other edge-cases:
+---
