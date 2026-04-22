@@ -10,12 +10,12 @@ param location string = deployment().location
 
 */
 
-import { defaultSchema } from '../../modules/naming-schema/module.bicep'
-import { genName, genNameId } from '../../modules/naming/module.bicep'
+import { schema } from '../../naming/schema/module.bicep'
+import { genName, genNameId } from '../../naming/generator/module.bicep'
 
 // Use 'nameGenerator()'-Function for consistent naming.
 output resoureGroupNamingExample string[] = [
-  for index in range(0, 3): genName('Microsoft.Resources/resourceGroups', defaultSchema, location, {
+  for index in range(0, 3): genName('Microsoft.Resources/resourceGroups', schema.default, location, {
     name: 'demo'
     environment: environment
     index: index

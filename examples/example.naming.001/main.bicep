@@ -1,7 +1,5 @@
-targetScope = 'resourceGroup'
-
 param location string = resourceGroup().location
-param environment string = 'dev'
+param environment string = 'development'
 
 /*
 
@@ -10,34 +8,29 @@ param environment string = 'dev'
 
 */
 
-import { defaultSchema } from '../../modules/naming-schema/module.bicep'
-import { genName, genNameId } from '../../modules/naming/module.bicep'
+import { schema } from '../../naming/schema/module.bicep'
+import { genName, genNameId } from '../../naming/generator/module.bicep'
 
-// Use 'nameGenerator()'-Function for consistent naming.
-output kvNamingExample string = genName('Microsoft.KeyVault/vaults', defaultSchema, location, {
+// Use 'genName'-Function for consistent naming.
+output kvNamingExample string = genName('Microsoft.KeyVault/vaults', schema.default, location, {
   name: 'secrets'
-  environment: environment
+  environment: 'test'
 })
-output storageAccountNamingExample string = genName('Microsoft.Storage/storageAccounts', defaultSchema, location, {
+output storageAccountNamingExample string = genName('Microsoft.Storage/storageAccounts', schema.default, location, {
   name: 'objects'
   environment: environment
 })
-output functionAppNamingExample string = genName('Microsoft.Web/sites::function', defaultSchema, location, {
+output functionAppNamingExample string = genName('Microsoft.Web/sites::function', schema.default, location, {
   name: 'apps'
   environment: environment
   index: 1
 })
-output appServiceNamingExample string = genName('Microsoft.Web/sites::app', defaultSchema, location, {
+output dataDiskNamingExample string = genName('Microsoft.Compute/disks::data', schema.default, location, {
   name: 'apps'
   environment: environment
   index: 1
 })
-output dataDiskNamingExample string = genName('Microsoft.Compute/disks::data', defaultSchema, location, {
-  name: 'apps'
-  environment: environment
-  index: 1
-})
-output osDiskNamingExample string = genName('Microsoft.Compute/disks::os', defaultSchema, location, {
+output osDiskNamingExample string = genName('Microsoft.Compute/disks::os', schema.default, location, {
   name: 'apps'
   environment: environment
   index: 1
