@@ -8,6 +8,18 @@ type typeNaming = {
   *: string?
 }
 
+@description('This is the type defintion for the naming config.')
+@export()
+type typeNamingSchema = {
+  abbreviations: object
+  locations: object
+
+  mappings: object?
+  indexStart: int?
+  
+  patterns: object
+}
+
 /*
 
   #######################################################
@@ -18,8 +30,8 @@ type typeNaming = {
 */
 
 @export()
-func genNameId(resourceType string, kind string, schema object, location string, parameters object) string =>
-  nameGenerator(resourceType, kind, schema, {
+func genNameId(resourceType string, id string, schema object, location string, parameters object) string =>
+  nameGenerator(resourceType, id, schema, {
     location: location
     ...parameters
   })

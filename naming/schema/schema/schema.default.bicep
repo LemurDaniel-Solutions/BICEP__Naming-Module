@@ -28,9 +28,10 @@ var schemaReference = {
   mappings: {
     // Will map any entry of parameter ENVIRONMENT to another value.
     // 
-    // environment: {
-    //   development: 'dev'
-    // }
+    environment: {
+      development: 'dev'
+      production: 'prod'
+    }
   }
 
   /*
@@ -44,21 +45,15 @@ var schemaReference = {
 
     SPECIAL PARAMETERS:
     The following only applies for modules, that correctly implement the naming schema.
-    - <INDEX>: should always point to the current index in an iteration. (For example with multiple subnets)
-    - <KEY>: should always point to the current key in an iteration. (When iterating over objects with items())
-    - <LOCATION>: should always point to the location of the resource.
-    - <UNIQUE_STRING_N>: is a unique id based on the resource group name. (N can be any number between 0 and 9)
-  
-    !!! NOTE !!!
-    UNIQUE_STRING_N is only available on resource group scope, since it uses the resource group name to generate the unique string.
-    The deployment name is not used, because when dealing with deployment stacks, the deployment name changes with each execution.
-    This doesn't happen with normal deployments, but the module is designed to work consistently in both cases.
+    - <INDEX>           : points to the current index in an iteration. Needs to be set when calling genName()
+    - <KEY>             : points to the current key in an iteration. Needs to be set when calling genName()
+    - <KIND>            : points to the current kind or id
+    - <ID>              : points specifically to the id when provided
+    - <LOCATION>        : points to the location of the resource.
+    - <UNIQUE_STRING_N> : is a unique id based on the resource group name. (N can be any number between 0 and 9)
   */
 
-  // This is used to modify the index.
-  // Most naming start counting at 1. rg-euwe-dev-project-01
-  // All modules start  with index at 1 when providing the value.
-  // If you want to start at 0, you can set this to -1.
+  // This is used to modify the index by adding and subtracting some amount
   indexModifier: 0
   patterns: {
     // The pattern search logic 
@@ -81,13 +76,12 @@ var schemaReference = {
       The entries can be defined in the following ways:
     
       A single pattern for a resource type:
-      - SINGLE:: must be prefixed for technical reasons. No way to tell strings apart from objects at bicep runtime.
-      'SINGLE::Microsoft.Web/serverfarms': '<TYPE>-<PROJECT_NAME>-<LOCATION>-<INDEX;{0:000}>'
+      - INLINE:: must be prefixed for technical reasons. No way to tell strings apart from objects at bicep runtime.
+      'INLINE::Microsoft.Web/serverfarms': '<TYPE>-<PROJECT_NAME>-<LOCATION>-<INDEX;{0:000}>'
 
       Different patterns for multiple <id> or <kind> of a resource type:
-      - MAP:: must be prefixed to differentiate for technical reasons.
       - <id> takes precedence over <kind>.
-      'MAP::<resource_type>': {
+      '<resource_type>': {
         default: '<TYPE>-<PROJECT_NAME>-<LOCATION>-<INDEX;{0:000}>'
         <kind>: '<TYPE>-<PROJECT_NAME>-<LOCATION>-<INDEX;{0:000}>'
         <id>: '<TYPE>-<PROJECT_NAME>-<LOCATION>-<INDEX;{0:000}>'
@@ -100,35 +94,45 @@ var schemaReference = {
     // This is the main Fallback pattern for resources.
     // - If no specific pattern is defined for a resource type, this will be used. 
     // - When deactivated, any resource type without a specific pattern will fail with an error.
-    //   like this: 'No pattern found for resourceType: SINGLE::Microsoft.Web/serverfarms and kind: default'
+    //   like this: 'No pattern found for resourceType: INLINE::Microsoft.Web/serverfarms and kind: default'
     default: '<TYPE><?PREFIX;-{0}>-<LOCATION>-<ENVIRONMENT>-<NAME><?INDEX;-{0:00}>'
 
     ////////////////////////////////////////////////
+    ///// Microsoft.KeyVault & Microsoft.Storage
+
+    'INLINE::Microsoft.KeyVault/vaults': 'kv<?PREFIX;-{0}>-<LOCATION>-<ENVIRONMENT>-<UNIQUE_STRING_5>'
+    'INLINE::Microsoft.Storage/storageAccounts': 'st<?PREFIX><LOCATION><ENVIRONMENT><NAME>'
+
     ////////////////////////////////////////////////
+    ///// Microsoft.Compute Disks
 
-    'SINGLE::Microsoft.Subscription/alias': '<COMPANY>-<NAME>-<ENVIRONMENT>-subs-<IDENTIFIER;{0:0000}>'
-
-    // 
-    'SINGLE::Microsoft.KeyVault/vaults': 'kv<?PREFIX;-{0}>-<LOCATION>-<ENVIRONMENT>-<UNIQUE_STRING_5>'
-    'SINGLE::Microsoft.Storage/storageAccounts': 'st<?PREFIX><LOCATION><ENVIRONMENT><NAME>'
-
-    // Compute
-    'MAP::Microsoft.Compute/disks': {
+    'Microsoft.Compute/disks': {
       data: '<TYPE><INDEX;{0:00}>-<NAME>-<ENVIRONMENT>'
       os: '<TYPE>-<NAME>-<ENVIRONMENT>'
     }
 
-    // Container
-    'SINGLE::Microsoft.ContainerRegistry/registries': 'acr<?PREFIX;-{0}>-<LOCATION>-<ENVIRONMENT>-<NAME>'
+    ////////////////////////////////////////////////
+    ///// Microsoft.ContainerRegistry
 
-    // Network
-    'SINGLE::Microsoft.Network/virtualNetworks/virtualNetworkPeerings': 'vnet<?PREFIX;-{0}>-<LOCATION>-<ENVIRONMENT>-<NAME>'
+    'INLINE::Microsoft.ContainerRegistry/registries': 'acr<?PREFIX;-{0}>-<LOCATION>-<ENVIRONMENT>-<NAME>'
 
-    // Maybe remove naming for origins and ruleset?
-    'SINGLE::Microsoft.Cdn/profiles': 'afd<?PREFIX;-{0}>-<LOCATION>-<ENVIRONMENT>-<NAME>'
-    'SINGLE::Microsoft.Cdn/profiles/afdEndpoints': 'fde<?PREFIX;-{0}>-<LOCATION>-<ENVIRONMENT>-<NAME>'
-    'SINGLE::Microsoft.Cdn/profiles/originGroups': 'ogrp<?PREFIX;-{0}>-<LOCATION>-<ENVIRONMENT>-<NAME>'
-    'SINGLE::Microsoft.Cdn/profiles/ruleSets': 'rset<?PREFIX><LOCATION><ENVIRONMENT><NAME>'
+    ////////////////////////////////////////////////
+    ///// Microsoft.Network Virtual Network Peerings
+
+    'INLINE::Microsoft.Network/virtualNetworks/virtualNetworkPeerings': 'vnet<?PREFIX;-{0}>-<LOCATION>-<ENVIRONMENT>-<NAME>'
+
+    ////////////////////////////////////////////////
+    ///// Microsoft.Cdn Profiles & Related Resources
+
+    'INLINE::Microsoft.Cdn/profiles': 'afd<?PREFIX;-{0}>-<LOCATION>-<ENVIRONMENT>-<NAME>'
+    'INLINE::Microsoft.Cdn/profiles/afdEndpoints': 'fde<?PREFIX;-{0}>-<LOCATION>-<ENVIRONMENT>-<NAME>'
+    'INLINE::Microsoft.Cdn/profiles/originGroups': 'ogrp<?PREFIX;-{0}>-<LOCATION>-<ENVIRONMENT>-<NAME>'
+    'INLINE::Microsoft.Cdn/profiles/ruleSets': 'rset<?PREFIX><LOCATION><ENVIRONMENT><NAME>'
+
+    ////////////////////////////////////////////////
+    ///// Microsoft.Subscription Alias
+
+    'INLINE::Microsoft.Subscription/alias': '<COMPANY>-<NAME>-<ENVIRONMENT>-subs-<IDENTIFIER;{0:0000}>'
   }
 
   validate: {

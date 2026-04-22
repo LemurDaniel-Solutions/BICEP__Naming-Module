@@ -4,6 +4,8 @@ $resourceGroup = 'module.bicep-naming.examples'
 $location = 'Westeurope'
 
 try {
+  
+
   New-AzResourceGroup -Name $resourceGroup -Location $location -Force -Confirm:$false
 
   Write-Host -ForegroundColor Yellow "Example 1"
@@ -33,6 +35,7 @@ try {
   Write-Host
   Write-Host
   Read-Host -Prompt "Continue?"
-} finally {
+}
+finally {
   Remove-AzResourceGroup -Name $resourceGroup -Force -Confirm:$false
 }

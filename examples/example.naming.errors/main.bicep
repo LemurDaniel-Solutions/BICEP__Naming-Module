@@ -10,15 +10,15 @@ param environment string = 'dev'
 
 */
 
-import { defaultSchema } from '../../modules/naming-schema/module.bicep'
-import { genName, genNameId } from '../../modules/naming/module.bicep'
+import { schema } from '../../naming/schema/module.bicep'
+import { genName, genNameId } from '../../naming/generator/module.bicep'
 
-output dataDiskNamingExample string = genName('Microsoft.Compute/disks::data', defaultSchema, location, {
+output dataDiskNamingExample string = genName('Microsoft.Compute/disks::data', schema.default, location, {
   name: 'apps'
   environment: environment
   index: 12 // Error by being out of range
 })
-output osDiskNamingExample string = genName('Microsoft.Compute/disks::data', defaultSchema, location, {
+output osDiskNamingExample string = genName('Microsoft.Compute/disks::data', schema.default, location, {
   name: 'apps'
   environment: environment
   index: 1
